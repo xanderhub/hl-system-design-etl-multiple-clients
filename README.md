@@ -12,7 +12,11 @@ In the following diagram there is a description of how the ETL flow mentioned ab
 
 ![ETL diagram](https://user-images.githubusercontent.com/33380175/71544124-c9201900-2983-11ea-8af1-d46202fdc20d.png)
 
+Full scale diagram is available [here](https://drive.google.com/file/d/1rbHCZfInV0_mP0-VsejrjA1zoOQ5PQJk/view?usp=sharing)
 
 ### Client integration layer
 Different clients have different APIs to interact with our ETL. Clients want to send us their data without integrating with our system or developing additional integration mechanisms. The most popular way for client to share his data with external services is via some __SFTP__ that temporary stores his data to be taken by some file tranfer service (Extract phase). Another way is to expose our __API__ to our clients so they could send us their data by using it (i.e API for our file transfer service). Simillar way is some __web interface__ that makes the same but has some UI for customer convenience. There is also an option for client to send the data to some cloud storage (Amazon S3, Microsoft Simple Storage etc.) <br />
 The final stage of the extract phase is __Data Lake__ - this is a storage for all customer's data (files). It has all file history per customer. Data lake stores the files as is - the same format as client sends to us. There can be csv, json, text, excel and many other formats stored in there.
+
+### Data processing layer
+This layer is responsible for data processing, i.e transformation, aggregation, normalization etc. It aimed also to convert all client files to some unified format and structurize the data. There is a configuration database that stores individual information per each client about how his data should be mapped and processed, what format the data is etc. Data process engine (can be Apache Spark) uses this configuration database and can handle multiple files from multiple clients concurrently. This data process engine is managed by some data pipeline manager (Apache Airflow DAG) - it can schedule all processes and helps to handle failures, re-runs and provides basic monitoring of data processing tasks.  
